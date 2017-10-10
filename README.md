@@ -1,7 +1,7 @@
 # Using LINQ in Azure Functions
 This is a short tutorial on how to use LINQ properly in Azure Functions
 
-> LEARN MORE. If you are not familiar with Azure Functions I recommend you read the <a href="https://docs.microsoft.com/en-us/azure/azure-functions/">official documentation here</a>. There are amazing samples and guides to start from zero. You'll also need an Azure account. If you don't have one, you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">start for free here</a>
+> LEARN MORE. If you are not familiar with Azure Functions I recommend you read the <a href="https://docs.microsoft.com/en-us/azure/azure-functions/">official documentation here</a>. There are amazing samples and guides to start from zero. You will also need an Azure account. If you don't have one, you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">start for free here</a>.
 
 ## What is LINQ? ##
 <i>Language-Integrated Query (LINQ) is the name for a set of technologies based on the integration of query capabilities directly into the C# language. Traditionally, queries against data are expressed as simple strings without type checking at compile time or IntelliSense support. Furthermore, you have to learn a different query language for each type of data source: SQL databases, XML documents, various Web services, and so on. With LINQ, a query is a first-class language construct, just like classes, methods, events.</i> - <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/">Official LINQ documentation</a>
@@ -50,30 +50,30 @@ namespace linqBasics
 }
 
 ```
-and we can query not just arrays or lists but also objects in general, XML files and SQL databases as we'll do later.
+And we can query not just arrays or lists but also objects in general, XML files and SQL databases as we wll do later.
 
-As you can see there are two types of querying styles: Query syntax and Method syntax. You can learn about their differences, pros and conds at the <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/standard-query-operators-overview">LINQ Documentation</a>. In this article we'll mostly used query syntax when querying our database.
+As you can see there are two types of querying styles: Query syntax and Method syntax. You can learn about their differences, pros and cons at the <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/standard-query-operators-overview">LINQ Documentation</a>. In this article we will mostly used query syntax when querying our database.
 
-In this repo you'll find your ways to do basic operations to a SQL Server Database using LINQ in Azure Functions. We'll cover how to:
-- Add a new row to a table,
-- Update a row,
-- Delete a row,
-- Querying single and multiple tables using LINQ query syntax.
+In this repo you will find your ways to do basic operations to a SQL Server Database using LINQ in Azure Functions, we will cover how to:
+- Add a new row to a table
+- Update a row
+- Delete a row
+- Querying single and multiple tables using LINQ query syntax
 
 ## Creating an Azure Function App ##
-After logging in to our Azure Account we click the "New" button on the upper left side on the page and type <i>'function'</i> in the search bar:
+After logging in to our Azure Account we click the 'New' button on the upper left side on the page and type <i>'function'</i> in the search bar:
 !["Image 1. Azure Portal"](images/functions-1.png)
 
 
-Once we click the 'create' button after selection 'Function App' in the previous menu we'll face the next form in which will fill some basic information regarding our Function App
+Once we click the 'Create' button after selecting 'Function App' in the previous menu we will find the next form in which will fill some basic information regarding our Function App
 
 !["Image 2. Filling the info for our Azure Function "](images/functions-2.png)
 
 ## Creating our functions ##
-A Function App in Azure can host multiple Functions so we'll leverage this to have a single function for each operation we'll work on at this repo.
+A Function App in Azure can host multiple Functions so we will leverage this to have a single function for each operation we will work on at this repo.
 
 ### Adding our SQL Server connection string ###
-Before starting to use LINQ we'll add out database connection string to our Function App: We have to click on 'Application Settings' which is located under the 'Configured features' sub menu in our recently created Function App:
+Before starting to use LINQ we will add out database connection string to our Function App: We have to click on 'Application Settings' which is located under the 'Configured features' sub menu in our recently created Function App:
 
 !["Image 3. Adding a connection string to our Function App](images/functions-3.png)
 
@@ -89,12 +89,13 @@ Azure Functions have many ways to interact with users including Triggers, Inputs
 - Write directly to a Cosmos DB table,
 - among other scenarios.
 
-For this specific repo we'll use a manual trigger for our Functions. That means, the function will be activated only when we push a "Run" button on the function site
+For this specific repo we will use a manual trigger for our Functions. That means, the function will be activated only when we push a "Run" button on the function site
 
 To create a new function we just click the '+' button in our Functions menu. Once there we select 'Custom function' below the 'Get started on your own' sub title:
+
 ![Image 5. Creating our first function](images/functions-5.png)
 
-Here we'll look for the ManualTrigger template written in C#, give it a name and click the 'Create' button:
+Here we will look for the ManualTrigger template written in C#, give it a name and click the 'Create' button:
 ![Image 6. Selecting a Manual trigger for our function](images/functions-6.png)
 
 > NOTE. While a manual trigger might not be a real live scenario,it is a good enough scenario for what we want to achieve which is using LINQ to query a database.
@@ -112,7 +113,7 @@ public class SalesLT_Product
 ```
 > LEARN MORE. You can find regarding <a href="https://docs.microsoft.com/en-us/dotnet/api/system.data.linq.mapping.columnattribute?view=netframework-4.7">ColumnAttribute</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.data.linq.mapping.tableattribute?view=netframework-4.7">TableAttribute</a> on their respective documentation. 
 
-However there will be times when our database is composed of multiple tables, probably dozens of them, each of one with other dozens of attributes. In those times it will probably be better to use mapping tools to automate this process. On this ocassion we'll use a command called <a hred="https://docs.microsoft.com/en-us/dotnet/framework/tools/sqlmetal-exe-code-generation-tool">SqlMetal.exe</a>, but there are other ways to do it, find <a href="https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql/linq/how-to-generate-the-object-model-in-visual-basic-or-csharp">more info here</a>.
+However there will be times when our database is composed of multiple tables, probably dozens of them, each of one with other dozens of attributes. In those times it will probably be better to use mapping tools to automate this process. On this ocassion we will use a command called <a hred="https://docs.microsoft.com/en-us/dotnet/framework/tools/sqlmetal-exe-code-generation-tool">SqlMetal.exe</a>, but there are other ways to do it, find <a href="https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql/linq/how-to-generate-the-object-model-in-visual-basic-or-csharp">more info here</a>.
 
 #### Using SqlMetal.exe ####
 It is fairly easy to use SqlMetal.exe. If we have installed Visual Studio on our machines, we already have to tool at our PCs, if not we just have to download the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=8279">Windows SDK from here</a>
@@ -150,7 +151,7 @@ First we need to add a reference to System.XML.Lin on our mappedClasses.cs file 
 #r "System.XML.Linq"
 ```
 
-Then, at our run.csx file we'll add some references to librarys and to our mappedClasses.cs file as well:
+Then, at our run.csx file we will add some references to librarys and to our mappedClasses.cs file as well:
 
 ```javascript
 #r "System.Data.Linq"
@@ -175,7 +176,7 @@ DataContext db = new DataContext(connString);
 Table<SalesLT_Product> products = db.GetTable<SalesLT_Product>();
 ```
 
-Querying time, as mentioned before we'll use the Query syntax type a simple query would look like this:
+Querying time, as mentioned before we will use the Query syntax type a simple query would look like this:
 ```csharp
     IQueryable<SalesLT_Product> results = from product 
                                         in products 
