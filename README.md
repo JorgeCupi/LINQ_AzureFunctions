@@ -1,7 +1,7 @@
 # Using LINQ in Azure Functions
 This is a short tutorial on how to use LINQ properly in Azure Functions
 
-> LEARN MORE. If you are not familiar with Azure Functions I recommend you read the <a href="https://docs.microsoft.com/en-us/azure/azure-functions/">official documentation here</a>. There are amazing samples and guides to start from zero. You will also need an Azure account. If you don't have one, you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">start for free here</a>.
+> LEARN MORE. If you are not familiar with Azure Functions I recommend you read the <a href="https://docs.microsoft.com/en-us/azure/azure-functions/">official documentation here</a>. There are amazing samples and guides to start from zero. You will also need an Azure account. If you do not have one, you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">start for free here</a>.
 
 ## What is LINQ? ##
 <i>Language-Integrated Query (LINQ) is the name for a set of technologies based on the integration of query capabilities directly into the C# language. Traditionally, queries against data are expressed as simple strings without type checking at compile time or IntelliSense support. Furthermore, you have to learn a different query language for each type of data source: SQL databases, XML documents, various Web services, and so on. With LINQ, a query is a first-class language construct, just like classes, methods, events.</i> - <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/">Official LINQ documentation</a>
@@ -124,7 +124,7 @@ sqlmetal /code:{FileNameOfYourGeneratedCode.cs} /conn:"{YourDataBaseConnectionSt
 
 This command will result into a new CS file containing your new classes that have mapped your entire database.
 
-> TIP. You don't need to map ALL your database if you only want to query a couple of tables as long as such tables are not related to other tables that will not be mapped.
+> TIP. You do not need to map ALL your database if you only want to query a couple of tables as long as such tables are not related to other tables that will not be mapped.
 
 #### Uploading a file to your Function App ####
 Now that we have our CS file with our mapped tables into classes we need to upload said file to our Azure Function App. This is easier done than said:
@@ -151,7 +151,7 @@ First we need to add a reference to System.XML.Lin on our mappedClasses.cs file 
 #r "System.XML.Linq"
 ```
 
-Then, at our run.csx file we will add some references to librarys and to our mappedClasses.cs file as well:
+Then, at our run.csx file we will add some references to libraries and to our mappedClasses.cs file as well:
 
 ```javascript
 #r "System.Data.Linq"
@@ -237,6 +237,101 @@ public static void Run(string input, TraceWriter log)
 ```
 
 ### Exercise 2: Querying multiple tables ###
+Querying a single table with LINQ was easy and probably had the same difficulty as doing it with T-SQL. But it is when we need to join tables that LINQ becomes powerful.
+What T-SQL query would we have to use if we wanted to check all products that are 'Mountain Frames' and 'Black'? 
+```sql
+SELECT SalesLT.Product.Name, SalesLT.Product.Color, SalesLT.ProductCategory.Name
+FROM SalesLT.Product JOIN SalesLT.ProductCategory
+ON SalesLT.Product.ProductCategoryID=SalesLT.ProductCategory.ProductCategoryID
+WHERE SalesLT.Product.Color = 'Black' AND SalesLT.ProductCategory.Name = 'Mountain Frames'
+```
+
+While with LINQ it would be as simple as:
+```csharp
+IQueryable<SalesLT_Product>results = 
+    from product 
+    in products 
+    where (product.Color == "Black") 
+    && (product.SalesLT_ProductCategory.Name == "Mountain Frames")
+    select product.Name,product.Color,product.SalesLT_ProductCategory.Name;
+```
+
+Even if we wanted to define a new class to receive just those 3 attributes: Name, Color and Category name we just need to define a new class:
+
+```csharp
+public class SimpleProduct
+{
+    public string name{get;set;}
+    public string color{get;set;}
+    public string category{get;set;}
+}
+```
+
+And modify the LINQ query to return an IQueryable object of our new 'SimpleProduct' class:
+```csharp
+IQueryable<SimpleProduct> results = 
+    from product 
+    in products 
+    where (product.Color == "Black") 
+    && (product.SalesLT_ProductCategory.Name == "Mountain Frames")
+    select new SimpleProduct
+    {
+        name = product.Name,
+        color = product.Color,
+        category = product.SalesLT_ProductCategory.Name
+    };
+```
+The benefits? Not only we do not need to 'join' our mapped tables but we also have a more readable query using LINQ.
+
+We will have to upload mappedClassed again for our new second function and add the previously used references. The complete code for the second example looks like this:
+```csharp
+#r "System.Data.Linq"
+#r "System.Data"
+#r "System.Configuration"
+#load "mappedClasses.cs"
+
+using System.Configuration;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
+using System.Linq;
+
+
+public static void Run(string input, TraceWriter log)
+{
+    string connString = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+    
+    DataContext db = new DataContext(connString);
+    Table<SalesLT_Product> products = db.GetTable<SalesLT_Product>();
+
+    IQueryable<SimpleProduct> results = 
+    from product 
+    in products 
+    where (product.Color == "Black") 
+    && (product.SalesLT_ProductCategory.Name == "Mountain Frames")
+    select new SimpleProduct
+    {
+        name = product.Name,
+        color = product.Color,
+        category = product.SalesLT_ProductCategory.Name
+    };
+
+    int count =1; 
+    foreach (SimpleProduct item in results)
+    {
+        log.Info($"{count} - {item.name} - {item.color} - {item.category}");
+        count++;
+    }
+    log.Info($"{results.Count()} products");
+}
+
+public class SimpleProduct
+{
+    public string name{get;set;}
+    public string color{get;set;}
+    public string category{get;set;}
+}
+```
+
 ### Exercise 3: Creating a new row ###
 ### Exercise 4: Updating a row ###
 ### Exercise 5: Deleting a row ###
