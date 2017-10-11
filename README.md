@@ -204,7 +204,7 @@ The complete code will look like this:
 ```csharp
 public static void Run(string input, TraceWriter log)
 {
-    string connString = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+    string connString = ConfigurationManagver.ConnectionStrings["connString"].ConnectionString;
     
     DataContext db = new DataContext(connString);
     Table<SalesLT_Product> products = db.GetTable<SalesLT_Product>();
@@ -332,6 +332,117 @@ public class SimpleProduct
 }
 ```
 
-### Exercise 3: Creating a new row ###
+### Exercise 3: Inserting a new row ###
+For this excercise, instead of our generic DataContext we'll use the one that was created with the mapping SqlMetal tool:
+```csharp
+[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="functionsdb")]
+public partial class Functionsdb : DataContext
+{
+	
+	private static MappingSource mappingSource = new AttributeMappingSource();
+	
+	partial void OnCreated();
+	
+	public Functionsdb(string connection) : 
+			base(connection, mappingSource)
+	{
+		OnCreated();
+	}
+    
+    // More auto generated code...
+}
+```
+So in our Run.csx class, instead of:
+
+```console
+DataContext db = new DataContext(connString);
+```
+we will use:
+
+```console
+Functionsdb db = new Functionsdb(connString);
+```
+
+Why will we use this new class that inheritates from DataContext anyway?
+Mostly because we can modify this new class, or in our specific case, we can leverare the already generated 'Table' objects that the 'Functionsdb' class contains:
+```csharp
+public Table<SalesLT_Address> SalesLT_Address
+{
+    get
+    {
+        return this.GetTable<SalesLT_Address>();
+    }
+}
+
+public Table<SalesLT_Customer> SalesLT_Customer
+{
+    get
+    {
+        return this.GetTable<SalesLT_Customer>();
+    }
+}
+
+// ... More generated objects
+```
+
+Having this tools. Adding a new row to is as easy as creating a new object and adding it to the its specific table in the datacontext:
+
+```csharp
+SalesLT_Address address = new SalesLT_Address{
+    AddressLine1 = "Cl 92 #11 51",
+    City = "Bogota",
+    StateProvince = "Bogota D.C.",
+    CountryRegion = "Colombia",
+    PostalCode = "110111",
+    Rowguid = Guid.NewGuid(),
+    ModifiedDate = DateTime.Now
+};
+
+db.SalesLT_Address.InsertOnSubmit(address);
+db.SubmitChanges();
+```
+
+The complete code for the Add function will look like this:
+```csharp
+#r "System.Data.Linq"
+#r "System.Data"
+#r "System.Configuration"
+#load "mappedClasses.cs"
+
+using System.Configuration;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
+using System.Linq;
+
+
+public static void Run(string input, TraceWriter log)
+{
+    string connString = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+    
+    Functionsdb db = new Functionsdb(connString);
+
+    SalesLT_Address address = new SalesLT_Address{
+        AddressLine1 = "Cl 92 #11 51",
+        City = "Bogota",
+        StateProvince = "Bogota D.C.",
+        CountryRegion = "Colombia",
+        PostalCode = "110111",
+        Rowguid = Guid.NewGuid(),
+        ModifiedDate = DateTime.Now
+    };
+
+    try
+    {
+        db.SalesLT_Address.InsertOnSubmit(address);
+        db.SubmitChanges();
+        log.Info($"Your have successfully inserted a new row to your table.");
+    }
+    catch
+    {
+        log.Info($"Something went wrong. Please try again.");
+    } 
+    
+}
+```
 ### Exercise 4: Updating a row ###
 ### Exercise 5: Deleting a row ###
