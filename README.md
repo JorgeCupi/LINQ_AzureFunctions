@@ -441,8 +441,16 @@ public static void Run(string input, TraceWriter log)
     {
         log.Info($"Something went wrong. Please try again.");
     } 
-    
 }
 ```
+>Output
+```console
+2017-10-11T20:33:11.932 Function started (Id=bf656aea-f7d7-4258-917e-33b95c4b10ad)
+
+2017-10-11T20:33:12.072 Your have successfully inserted a new row to your table.
+
+2017-10-11T20:33:12.072 Function completed (Success, Id=bf656aea-f7d7-4258-917e-33b95c4b10ad, Duration=145ms)
+```
+
 ### Exercise 4: Updating a row ###
 ### Exercise 5: Deleting a row ###
