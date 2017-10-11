@@ -453,4 +453,55 @@ public static void Run(string input, TraceWriter log)
 ```
 
 ### Exercise 4: Updating a row ###
+Updating a row is easy as well. We just have to:
+- Retrieve an object from our database with the ID of the row we want to update
+- Modify the object
+- Submit changes using the data context
+
+```csharp
+SalesLT_Address address = (from c in db.SalesLT_Address
+                 where c.AddressID == 11387
+                 select c).First();
+
+address.AddressLine2 = "Chapinero";
+db.SubmitChanges();
+```
+
+That's it! The whole code of the function will look like this:
+```csharp
+#r "System.Data.Linq"
+#r "System.Data"
+#r "System.Configuration"
+#load "mappedClasses.cs"
+
+using System.Configuration;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
+using System.Linq;
+
+
+public static void Run(string input, TraceWriter log)
+{
+    string connString = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+    
+    Functionsdb db = new Functionsdb(connString);
+
+    SalesLT_Address address = (from c in db.SalesLT_Address
+                 where c.AddressID == 11387
+                 select c).First();
+
+    address.AddressLine2 = "Chapinero";
+
+    try
+    {
+        db.SubmitChanges();
+        log.Info($"Your have successfully updated your row.");
+    }
+    catch
+    {
+        log.Info($"Something went wrong. Please try again.");
+    } 
+}
+```
+
 ### Exercise 5: Deleting a row ###
