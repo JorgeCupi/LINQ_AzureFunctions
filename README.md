@@ -503,5 +503,58 @@ public static void Run(string input, TraceWriter log)
     } 
 }
 ```
-
 ### Exercise 5: Deleting a row ###
+Deleting a row is similar to editing one:
+- We need to retrieve the row
+- Use the 'deleteOnSubmit' method
+- Commit the changes using the data context
+```csharp
+SalesLT_Address address = (from c in db.SalesLT_Address
+                 where c.AddressID == 11389
+                 select c).First();
+
+db.SalesLT_Address.DeleteOnSubmit(address);
+db.SubmitChanges();
+```
+The complete function has only a few lines of code:
+```csharp
+#r "System.Data.Linq"
+#r "System.Data"
+#r "System.Configuration"
+#load "mappedClasses.cs"
+
+using System.Configuration;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
+using System.Linq;
+
+
+public static void Run(string input, TraceWriter log)
+{
+    string connString = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+    
+    Functionsdb db = new Functionsdb(connString);
+
+    SalesLT_Address address = (from c in db.SalesLT_Address
+                 where c.AddressID == 11389
+                 select c).First();
+
+    try
+    {
+        db.SalesLT_Address.DeleteOnSubmit(address);
+        db.SubmitChanges();
+        log.Info($"Your have successfully deleted your row.");
+    }
+    catch
+    {
+        log.Info($"Something went wrong. Please try again.");
+    } 
+    
+}
+```
+## Conclusion ##
+LINQ and Azure Functions combined can be powerful and easy to use tools  when:
+- We are running a legacy App with older versions of .NET framework that do not support LINQ but we still want to easily access our database.
+- We are in a Internet of Things (IoT) scenario with devices that just need to add data quick and easily to our database and can only communicate to the internet via HTTP requests
+- We do not want to mix database logic with application logic on our web application
+- ... among other scenarios you could think of.
