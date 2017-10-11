@@ -1,5 +1,5 @@
 # Using LINQ in Azure Functions
-This is a short tutorial on how to use LINQ properly in Azure Functions
+This is a short tutorial on how to use LINQ properly in Azure Functions. If you want to skip the explanation part of the repo and just look at the code then all the examples are in the /code folder.
 
 > LEARN MORE. If you are not familiar with Azure Functions I recommend you read the <a href="https://docs.microsoft.com/en-us/azure/azure-functions/">official documentation here</a>. There are amazing samples and guides to start from zero. You will also need an Azure account. If you do not have one, you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">start for free here</a>.
 
