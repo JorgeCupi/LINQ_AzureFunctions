@@ -9,16 +9,7 @@ This is a short tutorial on how to use LINQ properly in Azure Functions. If you 
 Basically, what LINQ allows us is to make these type of queries:
 
 ```csharp
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace linqBasics
-{
-    class MainClass
-    {
-        public static void Main(string[] args)
-        {
             int n = int.Parse(Console.ReadLine());
 
 	    Random random = new Random();
@@ -43,11 +34,7 @@ namespace linqBasics
             Console.WriteLine("Results 2: ");
             foreach (int x in results2)
                  Console.WriteLine(x);
-            
-            Console.ReadLine();
-        }
-    }
-}
+  
 
 ```
 And we can query not just arrays or lists but also objects in general, XML files and SQL databases as we wll do later.
